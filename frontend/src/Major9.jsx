@@ -103,10 +103,7 @@ class Tap9 extends Component {
         this.state = {
             open: true,
             columns: [
-                { title: 'Mặt hàng', field: 'Ma_MH', type: "String" },
-                { title: 'Số lượng đặt', field: 'SoLuongDat', type: "String" },
-                { title: 'Tổng tiền', field: 'TongTien', type: 'Date' },
-                { title: 'Số lượng', field: 'SoLuong', type: 'Date' },
+                { title: 'Khách Hàng', field: 'KhachHang', type: "String" },
             ],
             data: [
 
@@ -154,7 +151,7 @@ class Tap9 extends Component {
     async handleChangeTypeOfTime(element) {
         let TypeOfTime = element.currentTarget.value
         console.log('TypeOfTime', TypeOfTime)
-        let dataReceive = await (axios.post('http://localhost:3000', {
+        let dataReceive = await (axios.post('http://localhost:3000/9', {
             TypeOfTime: TypeOfTime
         }))
         let data = _.get(dataReceive, 'data', [])
