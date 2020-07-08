@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import MaterialTable from 'material-table'
 import { Grid } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles';
+import axios from 'axios'
+import _ from 'lodash'
 // import SimpleReactCalendar from 'simple-react-calendar'
 import './App.css';
 const styles = theme =>({
@@ -21,14 +23,20 @@ class App extends Component {
         { title: 'Số lượng', field: 'soluong', type: 'Date' },
       ],
       data: [
-        { MaMH: '1', quantity: 1000094, Amount: 378612893, soluong: 10000094 },
-        { MaMH: '2', quantity: 1000094, Amount: 378612893, soluong: 10000094 },
-        { MaMH: '3', quantity: 1000094, Amount: 378612893, soluong: 10000094 },
-        { MaMH: '4', quantity: 1000094, Amount: 378612893, soluong: 10000094 },
-        { MaMH: '5', quantity: 1000094, Amount: 378612893, soluong: 10000094 },
-        { MaMH: '6', quantity: 1000094, Amount: 378612893, soluong: 10000094 },
+    
       ]
     }
+  }
+  async componentDidMount(){
+    console.log("aaaaaaaaaaaaa")
+    let dataReceive = await ( axios.post('http://localhost:3000', {
+      TypeOfTime: "Ngay"
+    }) )
+    let data = _.get(dataReceive, 'data', [])
+    console.log("data", dataReceive)
+    this.setState({
+      data: data
+    })
   }
   render() {
     const { columns, data } = this.state
