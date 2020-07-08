@@ -32,13 +32,18 @@ router.post('/', async (req, res, next) => {
 /*
 2. Tìm tất cả các đơn đặt hàng với tên khách hàng và ngày đặt hàng được thực hiện bởi khách hàng đó
 */
-router.get('/2', async (req, res, next) => {
+router.get('/1', async (req, res, next) => {
     try {
+        let TypeOfTime = req.body.TypeOfTime
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect('mssql://sa:12345678@localhost/DW')
         const result = await sql.query`
-            SELECT * 
-                FROM DonDatHang as d
+        SELECT ch.Ma_CH as Ma_CH, ch.SoDienThoai as SoDienThoai, vp.Ten_TP as Ten_TP, vp.Bang as Bang,mh.Ma_MH AS Ma_MH, mh.MoTa as MoTa, mh.KichCo as KichCo, mh.Gia as Gia, mh.TrongLuong as TrongLuong  
+            FROM CuaHang as ch
+            INNER JOIN Fact2 as f2 ON ch.Ma_CH = f2.Ma_CH 
+            INNER JOIN VanPhongDD as vp ON f2.Ma_TP = vp.Ma_TP
+            INNER JOIN MatHang as mh ON f2.Ma_MH = mh.Ma_MH
+
         `
         res.json(result.recordset)
     } catch (err) {
