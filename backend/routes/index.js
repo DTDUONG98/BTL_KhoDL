@@ -2,10 +2,7 @@
 
 const router = require('express').Router()
 const sql = require('mssql')
-/*
-1. Tìm tất cả các cửa hàng cùng với thành phố, bang, số điện thoại,
-mô tả, kích cỡ, trọng lượng và đơn giá của tất cả các mặt hàng được bán ở kho đó.
-*/
+
 router.post('/', async (req, res, next) => {
     try {
         let TypeOfTime = req.body.TypeOfTime
@@ -29,10 +26,12 @@ router.post('/', async (req, res, next) => {
         // ... error checks
     }
 })
+
 /*
-2. Tìm tất cả các đơn đặt hàng với tên khách hàng và ngày đặt hàng được thực hiện bởi khách hàng đó
+1. Tìm tất cả các cửa hàng cùng với thành phố, bang, số điện thoại,
+mô tả, kích cỡ, trọng lượng và đơn giá của tất cả các mặt hàng được bán ở kho đó.
 */
-router.get('/1', async (req, res, next) => {
+router.post('/1', async (req, res, next) => {
     try {
         let TypeOfTime = req.body.TypeOfTime
         // make sure that any items are correctly URL encoded in the connection string
@@ -50,6 +49,9 @@ router.get('/1', async (req, res, next) => {
         // ... error checks
     }
 })
+/*
+2. Tìm tất cả các đơn đặt hàng với tên khách hàng và ngày đặt hàng được thực hiện bởi khách hàng đó
+*/
 /* 
 3. Tìm tất cả các cửa hàng cùng với tên thành phố và số điện thoại mà có bán các mặt hàng 
     được đặt bởi một khách hàng nào đó
