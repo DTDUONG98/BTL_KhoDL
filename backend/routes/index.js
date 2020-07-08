@@ -159,10 +159,14 @@ router.post('/6', async (req, res, next) => {
 router.post('/7', async (req, res, next) => {
     try {
         let Ma_KH = req.body.Ma_KH
+        let Ten_TP = req.body.Ten_TP
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
         const result = await sql.query`
-
+            SELECT mh.Ma_MH as Ma_MH, f2.SoLuong
+                FROM MatHang as mh
+                INNER JOIN Fact2 as f2 ON f2.Ma_MH = mh.Ma_MH AND f2.Ma_CH = ${Ma_CH} 
+                INNER JOIN VanPhongDD as vp ON f2.Ma_TP = vp.Ma_TP AND vp.Ten_TP = ${Ten_TP}
         `
         res.json(result.recordset)
     } catch (err) {
