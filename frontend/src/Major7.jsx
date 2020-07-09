@@ -154,12 +154,14 @@ class Tap7 extends Component {
     }
 
     async handleChangeTypeOfTime(element) {
-        const { ngay, thang, nam, quy } = this.state
+        const { ngay, thang, nam, quy, Ma_MH, Ten_TP } = this.state
         let dataReceive = await (axios.post('http://localhost:3000/7', {
             Ngay: ngay,
             Thang: thang,
             Nam: nam,
             Quy: quy,
+            Ma_MH: Ma_MH,
+            Ten_TP: Ten_TP,
         }))
         let data = _.get(dataReceive, 'data', [])
         console.log(`data`, data)
@@ -168,7 +170,7 @@ class Tap7 extends Component {
         })
     }
     render() {
-        const { open, columns, data, ngay, thang, nam, quy } = this.state
+        const { open, columns, data, ngay, thang, nam, quy, Ma_MH, Ten_TP } = this.state
         const { classes } = this.props
         return (
             <div className={classes.root}>
@@ -248,6 +250,22 @@ class Tap7 extends Component {
                                     variant="outlined"
                                     value={quy}
                                     onChange={(element) => { this.setState({ quy: element.currentTarget.value }) }}
+                                />
+                                <TextField
+                                    className={classes.input}
+                                    id="outlined-basic"
+                                    label="Mã Khách Hàng"
+                                    variant="outlined"
+                                    value={Ma_MH}
+                                    onChange={(element) => { this.setState({ Ma_MH: element.currentTarget.value }) }}
+                                />
+                                <TextField
+                                    className={classes.input}
+                                    id="outlined-basic"
+                                    label="Tên thành phố"
+                                    variant="outlined"
+                                    value={Ten_TP}
+                                    onChange={(element) => { this.setState({ Ten_TP: element.currentTarget.value }) }}
                                 />
                                 <Button
                                     variant="contained"
