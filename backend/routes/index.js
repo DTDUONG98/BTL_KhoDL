@@ -2,27 +2,34 @@
 
 const router = require('express').Router()
 const sql = require('mssql')
-const IP = "192.168.128.12"
+const IP = "localhost"
 
 router.post('/', async (req, res, next) => {
     try {
-        let TypeOfTime = req.body.TypeOfTime
+        let {Ngay, Thang, Quy, Nam} = req.body
+
+        let filter = ""
+        if (Ngay) filter = ` ${filter} AND tg.Ngay = ${Ngay} `
+        if (Thang) filter = ` ${filter} AND tg.Thang = ${Thang} `
+        if (Quy) filter = ` ${filter} AND tg.Quy = ${Quy} `
+        if (Nam) filter = ` ${filter} AND tg.Nam = ${Nam} `
+        
         // make sure that any items are correctly URL encoded in the connection string
+        
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
         let query = `
             SELECT DISTINCT mh.Ma_MH as Ma_MH, SUM(f1.SoLuongDat) as SoLuongDat, SUM(f1.TongTien) as TongTien, SUM(f2.SoLuong) as SoLuong
                 FROM Mathang as mh
                 INNER JOIN Fact1 as f1 ON mh.Ma_MH = f1.Ma_MH
                 INNER JOIN Fact2 as f2 ON mh.Ma_MH = f2.Ma_MH
-                INNER JOIN ThoiGian as tg ON tg.Ma_TG = f1.Ma_TG
-            GROUP BY tg.${TypeOfTime}, mh.Ma_MH
-        `
-        const result = await sql.query(query)
+                INNER JOIN ThoiGian as tg ON tg.Ma_TG = f1.Ma_TG ${filter}
+            GROUP BY mh.Ma_MH
+            `;
         console.log(query)
+        const result = await sql.query(query)
+        
         //res.json(result.recordset)
-        res.json({
-            hello: "mother fucker"
-        })
+        res.json(result.recordset)
     } catch (err) {
         // ... error checks
     }
@@ -34,17 +41,26 @@ mô tả, kích cỡ, trọng lượng và đơn giá của tất cả các mặ
 */
 router.post('/1', async (req, res, next) => {
     try {
-        let TypeOfTime = req.body.TypeOfTime
+        let {Ngay, Thang, Quy, Nam} = req.body
+
+        let filter = ""
+        if (Ngay) filter = ` ${filter} AND tg.Ngay = ${Ngay} `
+        if (Thang) filter = ` ${filter} AND tg.Thang = ${Thang} `
+        if (Quy) filter = ` ${filter} AND tg.Quy = ${Quy} `
+        if (Nam) filter = ` ${filter} AND tg.Nam = ${Nam} `
+        
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
-        const result = await sql.query`
-        SELECT DISTINCT ch.Ma_CH as Ma_CH, ch.SoDienThoai as SoDienThoai, vp.Ten_TP as Ten_TP, vp.Bang as Bang,mh.Ma_MH AS Ma_MH, mh.MoTa as MoTa, mh.KichCo as KichCo, mh.Gia as Gia, mh.TrongLuong as TrongLuong  
-            FROM CuaHang as ch
-            INNER JOIN Fact2 as f2 ON ch.Ma_CH = f2.Ma_CH 
-            INNER JOIN VanPhongDD as vp ON f2.Ma_TP = vp.Ma_TP
-            INNER JOIN MatHang as mh ON f2.Ma_MH = mh.Ma_MH
-
+        let query = `
+            SELECT DISTINCT ch.Ma_CH as Ma_CH, ch.SoDienThoai as SoDienThoai, vp.Ten_TP as Ten_TP, vp.Bang as Bang,mh.Ma_MH AS Ma_MH, mh.MoTa as MoTa, mh.KichCo as KichCo, mh.Gia as Gia, mh.TrongLuong as TrongLuong  
+                FROM CuaHang as ch
+                INNER JOIN Fact2 as f2 ON ch.Ma_CH = f2.Ma_CH 
+                INNER JOIN ThoiGian as tg ON tg.Ma_TG = f1.Ma_TG ${filter}
+                INNER JOIN VanPhongDD as vp ON f2.Ma_TP = vp.Ma_TP
+                INNER JOIN MatHang as mh ON f2.Ma_MH = mh.Ma_MH
         `
+        console.log("Query 1:",query)
+        const result = await sql.query(query)
         res.json(result.recordset)
     } catch (err) {
         // ... error checks
@@ -163,10 +179,11 @@ router.post('/7', async (req, res, next) => {
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
         const result = await sql.query`
-            SELECT mh.Ma_MH as Ma_MH, f2.SoLuong
+            SELECT mh.Ma_MH as Ma_MH, SUM(f2.SoLuong) as SoLuong
                 FROM MatHang as mh
                 INNER JOIN Fact2 as f2 ON f2.Ma_MH = mh.Ma_MH AND f2.Ma_CH = ${Ma_CH} 
                 INNER JOIN VanPhongDD as vp ON f2.Ma_TP = vp.Ma_TP AND vp.Ten_TP = ${Ten_TP}
+            GROUP BY mh.Ma_MH
         `
         res.json(result.recordset)
     } catch (err) {
