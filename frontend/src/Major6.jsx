@@ -155,8 +155,9 @@ class Tap6 extends Component {
     }
 
     async handleChangeTypeOfTime(element) {
-        const {ngay , thang , nam, quy} = this.state
+        const {ngay , thang , nam, quy, Ma_KH} = this.state
         let dataReceive = await (axios.post('http://localhost:3000/6', {
+            Ma_KH: Ma_KH,
             Ngay: ngay,
             Thang: thang,
             Nam: nam,
@@ -169,7 +170,7 @@ class Tap6 extends Component {
         })
     }
     render() {
-        const { open, columns, data, ngay, thang , nam, quy } = this.state
+        const { open, columns, data, ngay, thang , nam, quy, Ma_KH } = this.state
         const { classes } = this.props
         return (
             <div className={classes.root}>
@@ -250,9 +251,16 @@ class Tap6 extends Component {
                                     value={quy}
                                     onChange={(element) =>{this.setState({quy: element.currentTarget.value})}}
                                 />
+                                 <TextField
+                                    className={classes.input}
+                                    id="outlined-basic"
+                                    label="Mã Khách hàng"
+                                    variant="outlined"
+                                    value={Ma_KH}
+                                    onChange={(element) =>{this.setState({Ma_KH: element.currentTarget.value})}}
+                                />
                                 <Button
                                     variant="contained"
-                                    value="Ngay"
                                     color="primary"
                                     size="large"
                                     className={classes.button}
