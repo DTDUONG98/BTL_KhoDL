@@ -132,18 +132,25 @@ router.post('/3', async (req, res, next) => {
 */
 router.post('/4', async (req, res, next) => {
     try {
-        let TypeOfTime = req.body.TypeOfTime
-        let Ma_MH = req.body.Ma_MH
-        let SoLuong = req.body.SoLuong
+        let {Ngay, Thang, Quy, Nam, Ma_MH, SoLuong} = req.body
+
+        let filter = ""
+        if (Ngay) filter = ` ${filter} AND tg.Ngay = ${Ngay} `
+        if (Thang) filter = ` ${filter} AND tg.Thang = ${Thang} `
+        if (Quy) filter = ` ${filter} AND tg.Quy = ${Quy} `
+        if (Nam) filter = ` ${filter} AND tg.Nam = ${Nam} `
+   
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
-        const result = await sql.query`
+        let query = `
             SELECT DISTINCT vp.Ma_TP AS Ma_TP, vp.Ten_TP AS Ten_TP, vp.Bang AS Bang
                 FROM VanPhongDD AS vp
                 INNER JOIN Fact2 AS f2 ON f2.Ma_TP = vp.Ma_TP
-            WHERE f2.Ma_MH = ${Ma_MH} AND f2.SoLuong > ${SoLuong} 
-            
+                INNER JOIN ThoiGian as tg ON tg.Ma_TG = f2.Ma_TG ${filter}          
+            WHERE f2.Ma_MH = ${Ma_MH} AND f2.SoLuong > ${SoLuong}            
         `
+        console.log("Query 4", query)
+        const result = await sql.query(query)
         res.json(result.recordset)
     } catch (err) {
         // ... error checks
