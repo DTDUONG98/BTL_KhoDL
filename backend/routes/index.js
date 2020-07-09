@@ -55,7 +55,7 @@ router.post('/1', async (req, res, next) => {
             SELECT DISTINCT ch.Ma_CH as Ma_CH, ch.SoDienThoai as SoDienThoai, vp.Ten_TP as Ten_TP, vp.Bang as Bang,mh.Ma_MH AS Ma_MH, mh.MoTa as MoTa, mh.KichCo as KichCo, mh.Gia as Gia, mh.TrongLuong as TrongLuong  
                 FROM CuaHang as ch
                 INNER JOIN Fact2 as f2 ON ch.Ma_CH = f2.Ma_CH 
-                INNER JOIN ThoiGian as tg ON tg.Ma_TG = f1.Ma_TG ${filter}
+                INNER JOIN ThoiGian as tg ON tg.Ma_TG = f2.Ma_TG ${filter}
                 INNER JOIN VanPhongDD as vp ON f2.Ma_TP = vp.Ma_TP
                 INNER JOIN MatHang as mh ON f2.Ma_MH = mh.Ma_MH
         `

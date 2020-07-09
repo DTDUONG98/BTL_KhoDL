@@ -107,7 +107,12 @@ class Tap9 extends Component {
         this.state = {
             open: true,
             columns: [
-                { title: 'Khách Hàng', field: 'KhachHang', type: "String" },
+                { title: 'Mã khách hàng', field: 'Ma_KH', type: "String" },
+                { title: 'Tên khách hàng', field: 'TenKH', type: "String" },
+                { title: 'Mã thành phố', field: 'Ma_TP', type: "String" },
+                { title: 'Ngày đặt đầu tiên', field: 'NgayDatDauTien', type: "String" },
+                { title: 'Khách hàng du lịch', field: 'KHDuLich', type: "String" },
+                { title: 'Khách hàng bưu điện', field: 'KHBuuDien', type: "String" },
             ],
             data: [
 
