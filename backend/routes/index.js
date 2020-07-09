@@ -71,16 +71,25 @@ router.post('/1', async (req, res, next) => {
 */
 router.post('/2', async (req, res, next) => {
     try {
-        let TypeOfTime = req.body.TypeOfTime
+        let {Ngay, Thang, Quy, Nam} = req.body
+
+        let filter = ""
+        if (Ngay) filter = ` ${filter} AND tg.Ngay = ${Ngay} `
+        if (Thang) filter = ` ${filter} AND tg.Thang = ${Thang} `
+        if (Quy) filter = ` ${filter} AND tg.Quy = ${Quy} `
+        if (Nam) filter = ` ${filter} AND tg.Nam = ${Nam} `
+        
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
-        const result = await sql.query`
-        SELECT DISTINCT d.Ma_Don AS Ma_Don,kh.Ma_KH AS Ma_KH, kh.TenKH AS TenKH, d.NgayDatHang AS NgayDatHang
-            FROM DonDatHang AS d
-            INNER JOIN Fact1 AS f1 ON d.Ma_Don = f1.Ma_Don
-            INNER JOIN KhachHang AS kh ON kh.Ma_KH = f1.Ma_KH
-            
+        let query = `
+            SELECT DISTINCT d.Ma_Don AS Ma_Don,kh.Ma_KH AS Ma_KH, kh.TenKH AS TenKH, d.NgayDatHang AS NgayDatHang
+                FROM DonDatHang AS d
+                INNER JOIN Fact1 AS f1 ON d.Ma_Don = f1.Ma_Don
+                INNER JOIN KhachHang AS kh ON kh.Ma_KH = f1.Ma_KH
+                INNER JOIN ThoiGian as tg ON tg.Ma_TG = f1.Ma_TG ${filter}          
         `
+        console.log("Query 2", query)
+        const result = await sql.query(query)
         res.json(result.recordset)
     } catch (err) {
         // ... error checks
@@ -92,17 +101,27 @@ router.post('/2', async (req, res, next) => {
 */
 router.post('/3', async (req, res, next) => {
     try {
-        let TypeOfTime = req.body.TypeOfTime
+        let {Ngay, Thang, Quy, Nam} = req.body
+
+        let filter = ""
+        if (Ngay) filter = ` ${filter} AND tg.Ngay = ${Ngay} `
+        if (Thang) filter = ` ${filter} AND tg.Thang = ${Thang} `
+        if (Quy) filter = ` ${filter} AND tg.Quy = ${Quy} `
+        if (Nam) filter = ` ${filter} AND tg.Nam = ${Nam} `
+        
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
-        const result = await sql.query`
-        SELECT DISTINCT ch.Ma_CH as Ma_CH, ch.SoDienThoai as SoDienThoai, vp.Ten_TP as Ten_TP, vp.Bang as Bang
-            FROM CuaHang AS ch
-            INNER JOIN Fact2 AS f2 ON f2.Ma_CH = ch.Ma_CH
-            INNER JOIN VanPhongDD AS vp ON vp.Ma_TP = f2.Ma_TP
-            INNER JOIN Fact1 AS f1 ON f1.Ma_CH = ch.Ma_CH 
-        WHERE f1.Ma_Don IS NOT NULL AND f1.Ma_KH IS NOT NULL AND f1.Ma_MH IS NOT NULL   
+        let query = `
+            SELECT DISTINCT ch.Ma_CH as Ma_CH, ch.SoDienThoai as SoDienThoai, vp.Ten_TP as Ten_TP, vp.Bang as Bang
+                FROM CuaHang AS ch
+                INNER JOIN Fact2 AS f2 ON f2.Ma_CH = ch.Ma_CH
+                INNER JOIN ThoiGian as tg ON tg.Ma_TG = f2.Ma_TG ${filter}          
+                INNER JOIN VanPhongDD AS vp ON vp.Ma_TP = f2.Ma_TP
+                INNER JOIN Fact1 AS f1 ON f1.Ma_CH = ch.Ma_CH 
+            WHERE f1.Ma_Don IS NOT NULL AND f1.Ma_KH IS NOT NULL AND f1.Ma_MH IS NOT NULL   
         `
+        console.log("Query 3",query)
+        const result = await sql.query(query)
         res.json(result.recordset)
     } catch (err) {
         // ... error checks
