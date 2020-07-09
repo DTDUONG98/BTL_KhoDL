@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MaterialTable from 'material-table'
-import { IconButton, Tooltip, CssBaseline, Drawer, Box, AppBar, Toolbar, List, Typography, Divider, Container, Grid, Link, Button } from '@material-ui/core';
+import { IconButton, Tooltip, CssBaseline, Drawer, TextField, AppBar, Toolbar, List, Typography, Divider, Container, Grid, Link, Button } from '@material-ui/core';
 import { Major1, Major2, Major3, Major4, Major5, Major6, Major7, Major8, Major9 } from './Component/ListItem'
 import axios from 'axios'
 import _ from 'lodash'
@@ -93,7 +93,11 @@ const styles = theme => ({
     },
     button: {
         borderRadius: 10,
-        marginRight: 20,
+        padding: 10,
+        marginTop: 15
+    },
+    input: {
+        padding: 10
     }
 });
 class Tap4 extends Component {
@@ -151,19 +155,23 @@ class Tap4 extends Component {
     }
 
     async handleChangeTypeOfTime(element) {
-        let TypeOfTime = element.currentTarget.value
-        console.log('TypeOfTime', TypeOfTime)
+        const {ngay , thang , nam, quy, Ma_MH, SoLuong} = this.state
         let dataReceive = await (axios.post('http://localhost:3000/4', {
-            TypeOfTime: TypeOfTime
+            Ngay: ngay,
+            Thang: thang,
+            Nam: nam,
+            Quy: quy,
+            Ma_MH: Ma_MH,
+            SoLuong: SoLuong
         }))
         let data = _.get(dataReceive, 'data', [])
-        console.log(`data ${TypeOfTime}`, data)
+        console.log(`data`, data)
         this.setState({
             data: data
         })
     }
     render() {
-        const { open, columns, data } = this.state
+        const { open, columns, data, ngay, thang , nam, quy, Ma_MH, SoLuong } = this.state
         const { classes } = this.props
         return (
             <div className={classes.root}>
@@ -212,26 +220,54 @@ class Tap4 extends Component {
                     <Container maxWidth="lg" className={classes.container}>
                         <Grid container spacing={3}>
                             <Grid item xs={12}>
-                                <Button
-                                    variant="contained"
-                                    value="Nam"
-                                    color="primary"
-                                    size="large"
-                                    className={classes.button}
-                                    onClick={this.handleChangeTypeOfTime}
-                                >
-                                    SELECT theo Năm
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    value="Thang"
-                                    color="primary"
-                                    size="large"
-                                    className={classes.button}
-                                    onClick={this.handleChangeTypeOfTime}
-                                >
-                                    SELECT theo Tháng
-                                </Button>
+                            <TextField
+                                    className={classes.input}
+                                    id="outlined-basic"
+                                    label="Ngày"
+                                    variant="outlined"
+                                    value={ngay}
+                                    onChange={(element) =>{this.setState({ngay: element.currentTarget.value})}}
+                                />
+                                <TextField
+                                    className={classes.input}
+                                    id="outlined-basic"
+                                    label="Tháng"
+                                    variant="outlined"
+                                    value={thang}
+                                    onChange={(element) =>{this.setState({thang: element.currentTarget.value})}}
+                                />
+                                <TextField
+                                    className={classes.input}
+                                    id="outlined-basic"
+                                    label="Năm"
+                                    variant="outlined"
+                                    value={nam}
+                                    onChange={(element) =>{this.setState({nam: element.currentTarget.value})}}
+                                />
+                                <TextField
+                                    className={classes.input}
+                                    id="outlined-basic"
+                                    label="Quý"
+                                    variant="outlined"
+                                    value={quy}
+                                    onChange={(element) =>{this.setState({quy: element.currentTarget.value})}}
+                                />
+                                 <TextField
+                                    className={classes.input}
+                                    id="outlined-basic"
+                                    label="Mã mặt hàng"
+                                    variant="outlined"
+                                    value={Ma_MH}
+                                    onChange={(element) =>{this.setState({Ma_MH: element.currentTarget.value})}}
+                                />
+                                 <TextField
+                                    className={classes.input}
+                                    id="outlined-basic"
+                                    label="số lượng"
+                                    variant="outlined"
+                                    value={SoLuong}
+                                    onChange={(element) =>{this.setState({SoLuong: element.currentTarget.value})}}
+                                />
                                 <Button
                                     variant="contained"
                                     value="Ngay"
@@ -240,7 +276,7 @@ class Tap4 extends Component {
                                     className={classes.button}
                                     onClick={this.handleChangeTypeOfTime}
                                 >
-                                    SELECT theo Ngày
+                                    FINDTER
                                 </Button>
                             </Grid>
                             <Grid item xs={12}>
