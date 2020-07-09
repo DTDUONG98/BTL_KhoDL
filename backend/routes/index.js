@@ -35,7 +35,7 @@ router.post('/', async (req, res, next) => {
     }
 })
 
-/*
+/* XONG
 1. Tìm tất cả các cửa hàng cùng với thành phố, bang, số điện thoại,
 mô tả, kích cỡ, trọng lượng và đơn giá của tất cả các mặt hàng được bán ở kho đó.
 */
@@ -66,7 +66,7 @@ router.post('/1', async (req, res, next) => {
         // ... error checks
     }
 })
-/*
+/* XONG
 2. Tìm tất cả các đơn đặt hàng với tên khách hàng và ngày đặt hàng được thực hiện bởi khách hàng đó
 */
 router.post('/2', async (req, res, next) => {
@@ -95,7 +95,7 @@ router.post('/2', async (req, res, next) => {
         // ... error checks
     }
 })
-/* 
+/* XONG
 3. Tìm tất cả các cửa hàng cùng với tên thành phố và số điện thoại mà có bán các mặt hàng 
     được đặt bởi một khách hàng nào đó
 */
@@ -127,7 +127,7 @@ router.post('/3', async (req, res, next) => {
         // ... error checks
     }
 })
-/*
+/* XONG
 4. Tìm địa chỉ văn phòng đại diện với tên thành phố, bang của tất cả các cửa hàng lưu kho một mặt hàng nào đó với số lượng trên mức cụ thể.
 */
 router.post('/4', async (req, res, next) => {
@@ -156,40 +156,63 @@ router.post('/4', async (req, res, next) => {
         // ... error checks
     }
 })
-/*
-5. Với mỗi một đơn đặt hàng của khách, liệt kê các mặt hàng được đặt cùng với mô tả, mã cửa hàng, tên thành phố và các cửa hàng có bán mặt hàng đó.
+/* XONG
+5. Với mỗi một đơn đặt hàng của khách, liệt kê các mặt hàng được đặt cùng với mô tả,
+ mã cửa hàng, tên thành phố và các cửa hàng có bán mặt hàng đó.
 */
 router.post('/5', async (req, res, next) => {
     try {
-        let Ma_Don = req.body.Ma_Don
+        let {Ngay, Thang, Quy, Nam, Ma_Don} = req.body
+
+        let filter = ""
+        if (Ngay) filter = ` ${filter} AND tg.Ngay = ${Ngay} `
+        if (Thang) filter = ` ${filter} AND tg.Thang = ${Thang} `
+        if (Quy) filter = ` ${filter} AND tg.Quy = ${Quy} `
+        if (Nam) filter = ` ${filter} AND tg.Nam = ${Nam} `
+        
+        
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
-        const result = await sql.query`
+        let query = `
         SELECT DISTINCT mh.Ma_MH AS Ma_MH, mh.MoTa AS MoTa,ch.Ma_CH AS Ma_CH, vp.Ten_TP AS Ten_TP
             FROM MatHang AS mh 
             INNER JOIN Fact1 AS f1 ON f1.Ma_MH = mh.Ma_MH AND f1.Ma_Don = ${Ma_Don}
+            INNER JOIN ThoiGian as tg ON tg.Ma_TG = f1.Ma_TG ${filter}          
             INNER JOIN CuaHang AS ch ON  ch.Ma_CH = f1.Ma_CH
             INNER JOIN VanPhongDD AS vp ON vp.Ma_TP = ch.Ma_TP       
             
         `
+        console.log("Query 5", query)
+        const result = await sql.query(query)
         res.json(result.recordset)
     } catch (err) {
         // ... error checks
     }
 })
-/*
+/* Xong
 6. Tìm thành phố và bang mà một khách hàng nào đó sinh sống
 */
 router.post('/6', async (req, res, next) => {
     try {
-        let Ma_KH = req.body.Ma_KH
+        let {Ngay, Thang, Quy, Nam, Ma_KH} = req.body
+
+        let filter = ""
+        if (Ngay) filter = ` ${filter} AND tg.Ngay = ${Ngay} `
+        if (Thang) filter = ` ${filter} AND tg.Thang = ${Thang} `
+        if (Quy) filter = ` ${filter} AND tg.Quy = ${Quy} `
+        if (Nam) filter = ` ${filter} AND tg.Nam = ${Nam} `
+        
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
-        const result = await sql.query`
+        let query = `
         SELECT DISTINCT vp.Ma_TP AS Ma_TP, vp.Ten_TP AS Ten_TP, vp.Bang AS Bang 
             FROM VanPhongDD AS vp 
             INNER JOIN KhachHang AS kh ON kh.Ma_TP = vp.Ma_TP AND kh.Ma_KH = ${Ma_KH}
+            INNER JOIN Fact1 as f1 ON f1.Ma_KH = kh.Ma_KH
+            INNER JOIN ThoiGian as tg ON tg.Ma_TG = f1.Ma_TG ${filter}          
         `
+        console.log("Query 6", query)
+        const result = await sql.query(query)
         res.json(result.recordset)
     } catch (err) {
         // ... error checks
