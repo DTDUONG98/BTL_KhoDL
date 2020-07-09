@@ -103,10 +103,10 @@ class Tap2 extends Component {
         this.state = {
             open: true,
             columns: [
-                { title: 'Mặt hàng', field: 'Ma_MH', type: "String" },
-                { title: 'Số lượng đặt', field: 'SoLuongDat', type: "String" },
-                { title: 'Tổng tiền', field: 'TongTien', type: 'Date' },
-                { title: 'Số lượng', field: 'SoLuong', type: 'Date' },
+                { title: 'MÃ Đơn Hàng', field: 'Ma_Don', type: "String" },
+                { title: 'Mã Khách Hàng', field: 'Ma_KH', type: "String" },
+                { title: 'Tên Khách Hàng', field: 'TenKH', type: 'String' },
+                { title: 'Ngày Đặt Hàng', field: 'NgayDatHang', type: 'Date' },
             ],
             data: [
 
@@ -154,7 +154,7 @@ class Tap2 extends Component {
     async handleChangeTypeOfTime(element) {
         let TypeOfTime = element.currentTarget.value
         console.log('TypeOfTime', TypeOfTime)
-        let dataReceive = await (axios.post('http://localhost:3000', {
+        let dataReceive = await (axios.post('http://localhost:3000/2', {
             TypeOfTime: TypeOfTime
         }))
         let data = _.get(dataReceive, 'data', [])
