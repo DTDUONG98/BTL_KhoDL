@@ -218,22 +218,33 @@ router.post('/6', async (req, res, next) => {
         // ... error checks
     }
 })
-/*
-7. Tìm mức độ tồn kho của một mặt hàng cụ thể tại tất cả các cửa hàng ở một thành phố cụ thể nào đó
+/* query like faild
+7. Tìm mức độ tồn kho của một mặt hàng cụ thể tại tất cả các cửa hàng 
+    ở một thành phố cụ thể nào đó
 */
 router.post('/7', async (req, res, next) => {
     try {
-        let Ma_KH = req.body.Ma_KH
-        let Ten_TP = req.body.Ten_TP
+        let {Ngay, Thang, Quy, Nam, Ma_MH, Ten_TP} = req.body
+
+        let filter = ""
+        if (Ngay) filter = ` ${filter} AND tg.Ngay = ${Ngay} `
+        if (Thang) filter = ` ${filter} AND tg.Thang = ${Thang} `
+        if (Quy) filter = ` ${filter} AND tg.Quy = ${Quy} `
+        if (Nam) filter = ` ${filter} AND tg.Nam = ${Nam} `
+       
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
-        const result = await sql.query`
+        let query = `
             SELECT mh.Ma_MH as Ma_MH, SUM(f2.SoLuong) as SoLuong
                 FROM MatHang as mh
-                INNER JOIN Fact2 as f2 ON f2.Ma_MH = mh.Ma_MH AND f2.Ma_CH = ${Ma_CH} 
-                INNER JOIN VanPhongDD as vp ON f2.Ma_TP = vp.Ma_TP AND vp.Ten_TP = ${Ten_TP}
+                INNER JOIN Fact2 as f2 ON f2.Ma_MH = mh.Ma_MH 
+                INNER JOIN ThoiGian as tg ON tg.Ma_TG = f2.Ma_TG ${filter}          
+                INNER JOIN VanPhongDD as vp ON f2.Ma_TP = vp.Ma_TP AND vp.Ten_TP LIKE %${Ten_TP}%
             GROUP BY mh.Ma_MH
+            HAVING mh.Ma_MH = ${Ma_MH}
         `
+        console.log('Query 7', query)
+        const result = await sql.query(query)
         res.json(result.recordset)
     } catch (err) {
         // ... error checks
@@ -244,12 +255,20 @@ router.post('/7', async (req, res, next) => {
 */
 router.post('/8', async (req, res, next) => {
     try {
-        let Ma_Don = req.body.Ma_Don
+        let {Ngay, Thang, Quy, Nam, Ma_Don} = req.body
+
+        let filter = ""
+        if (Ngay) filter = ` ${filter} AND tg.Ngay = ${Ngay} `
+        if (Thang) filter = ` ${filter} AND tg.Thang = ${Thang} `
+        if (Quy) filter = ` ${filter} AND tg.Quy = ${Quy} `
+        if (Nam) filter = ` ${filter} AND tg.Nam = ${Nam} `
+
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
-        const result = await sql.query`
+        let query = `
         SELECT DISTINCT mh.Ma_MH AS Ma_MH, f1.SoLuongDat AS SoLuongDat, kh.TenKH AS TenKH, ch.Ma_CH AS Ma_CH, vp.Ten_TP AS Ten_TP 
             FROM Fact1 AS f1
+            INNER JOIN ThoiGian as tg ON tg.Ma_TG = f1.Ma_TG ${filter}          
             INNER JOIN CuaHang AS ch ON ch.Ma_CH = f1.Ma_CH
             INNER JOIN MatHang AS mn ON mn.Ma_MH = f1.Ma_MH
             INNER JOIN MatHang AS mh ON mh.Ma_MH = f1.Ma_MH
@@ -257,22 +276,34 @@ router.post('/8', async (req, res, next) => {
             INNER JOIN VanPhongDD AS vp ON vp.Ma_TP = ch.Ma_TP
 	    WHERE f1.Ma_Don = ${Ma_Don}
         `
+        console.log("Query 8", query)
+        const result = await sql.query(query)
         res.json(result.recordset)
     } catch (err) {
         // ... error checks
     }
 })
 /*
-9. Tìm các khách hàng du lịch, khách hàng đặt theo đường bưu điện và khách hàng thuộc cả hai loại
+9. Tìm các khách hàng du lịch, khách hàng đặt theo đường bưu điện và
+khách hàng thuộc cả hai loại
 */
 router.post('/9', async (req, res, next) => {
     try {
-        let Ma_Don = req.body.Ma_Don
+        let {Ngay, Thang, Quy, Nam, Ma_Don} = req.body
+
+        let filter = ""
+        if (Ngay) filter = ` ${filter} AND tg.Ngay = ${Ngay} `
+        if (Thang) filter = ` ${filter} AND tg.Thang = ${Thang} `
+        if (Quy) filter = ` ${filter} AND tg.Quy = ${Quy} `
+        if (Nam) filter = ` ${filter} AND tg.Nam = ${Nam} `
+
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(`mssql://sa:12345678@${IP}/DW`)
-        const result = await sql.query`
+        let query = `
             SELECT * FROM KhachHang
         `
+        console.log("Query 9",query)
+        const result = await sql.query(query)
         res.json(result.recordset)
     } catch (err) {
         // ... error checks
